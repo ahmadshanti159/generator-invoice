@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقرير صيانة مولد كهربائي - وزارة الداخلية</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #e2e6e9;
+            font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        /* أزرار التحكم */
+        .btn-container {
+            width: 210mm;
+            max-width: 100%;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn-download, .btn-print {
+            background-color: #1e466e;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn-print {
+            background-color: #2c7a4d;
+        }
+        .btn-download:hover {
+            background-color: #0f2c48;
+        }
+        .btn-print:hover {
+            background-color: #1e5a3a;
+        }
+
+        /* ورقة التقرير - حجم A4 ثابت مع ضمان عدم التجاوز */
+        .report-page {
+            background: white;
+            width: 210mm;
+            height: 297mm;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            margin: 0 auto;
+            position: relative;
+            box-sizing: border-box;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* الترويسة مع الشعار في المنتصف - مساحة ثابتة */
+        .gov-header {
+            width: 100%;
+            padding: 12px 25px 8px 25px;
+            border-bottom: 2px solid #1e466e;
+            background-color: #ffffff;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .header-right {
+            text-align: right;
+            flex: 1;
+        }
+        .header-center {
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .header-left {
+            text-align: left;
+            flex: 1;
+        }
+        .logo-img {
+            width: 65px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .ministry-name {
+            font-size: 16px;
+            font-weight: 800;
+            color: #1e466e;
+            line-height: 1.4;
+        }
+        .sub-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c5282;
+            margin-top: 2px;
+        }
+        .dept-name {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1a3a5f;
+            margin-top: 3px;
+        }
+        .english-text {
+            font-size: 12px;
+            font-weight: 500;
+            color: #4a627a;
+            line-height: 1.3;
+            direction: ltr;
+        }
+        .separator-line {
+            height: 2px;
+            background: linear-gradient(90deg, #1e466e, #9bb7d4, #1e466e);
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        /* محتوى التقرير - مساحة قابلة للتمرير داخلياً */
+        .report-content {
+            padding: 12px 28px 15px 28px;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .report-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .report-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .report-content::-webkit-scrollbar-thumb {
+            background: #1e466e;
+            border-radius: 10px;
+        }
+
+        .report-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a3a5f;
+            border-bottom: 2px solid #1a3a5f;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        /* نظام العمودين */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 20px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .form-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .form-group label {
+            font-weight: 700;
+            font-size: 13px;
+            color: #1e3a5f;
+            white-space: nowrap;
+            min-width: 85px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="date"] {
+            flex: 1;
+            border: none;
+            border-bottom: 1px solid #9aaebf;
+            padding: 5px 3px;
+            font-size: 13px;
+            background: #ffffff;
+            outline: none;
+            font-family: inherit;
+        }
+
+        .full-width-row {
+            grid-column: span 2;
+        }
+
+        .checkbox-group-inline {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 15px;
+        }
+        .checkbox-group-inline label {
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .counter-label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-right: 3px;
+        }
+
+        .section-title {
+            background-color: #eef2f7;
+            padding: 5px 10px;
+            font-weight: 700;
+            font-size: 14px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+            border-right: 4px solid #1a3a5f;
+            color: #1e3a5f;
+            width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* شبكة عناصر الفحص */
+        .grid-checks {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px 20px;
+            width: 100%;
+            margin-bottom: 4px;
+        }
+
+        .check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            font-size: 13px;
+        }
+
+        .check-item input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+            cursor: pointer;
+            accent-color: #1e466e;
+            margin-left: 3px;
+        }
+
+        .check-item label {
+            font-weight: 500;
+            white-space: nowrap;
+            color: #2c3e4e;
+            min-width: 100px;
+            font-size: 13px;
+        }
+
+        .check-item input[type="text"] {
+            flex: 1;
+            min-width: 90px;
+            border: none;
+            border-bottom: 1px solid #cbd5e1;
+            background: transparent;
+            padding: 4px 3px;
+            outline: none;
+            font-size: 12px;
+        }
+
+        .notes-wrapper {
+            width: 100%;
+            margin-top: 4px;
+        }
+        .notes-field {
+            width: 100%;
+            border: 1px solid #ccd7e4;
+            padding: 8px 10px;
+            font-size: 13px;
+            background: #fefefb;
+            font-family: inherit;
+            resize: vertical;
+            border-radius: 4px;
+        }
+
+        /* تذييل خفيف بدون توقيع */
+        .footer-note {
+            margin-top: 12px;
+            padding-top: 8px;
+            text-align: center;
+            font-size: 11px;
+            color: #6c7a89;
+            border-top: 1px solid #cfdfed;
+            font-weight: 400;
+            flex-shrink: 0;
+        }
+
+        /* إعدادات الطباعة - ضمان احتواء الصفحة A4 بالكامل دون تجاوز */
+        @media print {
+            .btn-container {
+                display: none !important;
+            }
+            body {
+                background: white;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            @page {
+                size: A4;
+                margin: 0mm !important;
+            }
+            .report-page {
+                width: 100%;
+                height: 100%;
+                min-height: 297mm;
+                max-height: 297mm;
+                box-shadow: none;
+                margin: 0 !important;
+                padding: 0 !important;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+                overflow: visible !important;
+            }
+            .report-content {
+                overflow: visible !important;
+                padding: 10px 25px 12px 25px !important;
+            }
+            .two-columns {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px 20px !important;
+            }
+            .grid-checks {
+                display: grid !important;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 8px 20px !important;
+            }
+            .full-width-row {
+                grid-column: span 2 !important;
+            }
+            .form-group input[type="text"],
+            .form-group input[type="date"],
+            .check-item input[type="text"] {
+                border-bottom: 1px solid #9aaebf !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .section-title,
+            .gov-header,
+            .separator-line {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .section-title, .two-columns, .grid-checks, .notes-wrapper, .footer-note {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+        }
+
+        @media (max-width: 220mm) and (not print) {
+            .report-page, .btn-container {
+                width: 100%;
+            }
+            .two-columns {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .full-width-row {
+                grid-column: span 1;
+            }
+            .grid-checks {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="btn-container">
+        <button class="btn-download" id="saveImageBtn">📸 حفظ كصورة</button>
+        <button class="btn-print" id="printBtn">🖨️ طباعة التقرير</button>
+    </div>
+
+    <div class="report-page" id="reportContainer">
+        <!-- الترويسة مع شعار السلطة في الوسط -->
+        <div class="gov-header">
+            <div class="header-container">
+                <div class="header-right">
+                    <div class="ministry-name">دولة فلسطين</div>
+                    <div class="sub-title">وزارة الداخلية</div>
+                    <div class="dept-name">المديرية العامة للشرطة</div>
+                    <div class="dept-name">دائرة الاتصالات وتكنولوجيا المعلومات</div>
+                </div>
+                <div class="header-center">
+                    <img class="logo-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Coat_of_arms_of_the_Palestinian_National_Authority.svg/500px-Coat_of_arms_of_the_Palestinian_National_Authority.svg.png" alt="شعار فلسطين" onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Ccircle cx=\'50\' cy=\'50\' r=\'45\' fill=\'%231e466e\'/%3E%3Cpolygon points=\'50,20 65,55 80,55 68,70 73,90 50,75 27,90 32,70 20,55 35,55\' fill=\'%23D4AF37\'/%3E%3C/svg%3E';">
+                </div>
+                <div class="header-left">
+                    <div class="english-text">State of Palestine</div>
+                    <div class="english-text">Ministry of Interior</div>
+                    <div class="english-text">General Police Directorate</div>
+                    <div class="english-text">ICT Department</div>
+                </div>
+            </div>
+            <div class="separator-line"></div>
+        </div>
+
+        <div class="report-content">
+            <div class="report-title">تقرير صيانة مولد كهربائي</div>
+
+            <!-- الحقول الأساسية: التاريخ والعنوان في نفس الصف -->
+            <div class="two-columns">
+                <div class="form-group">
+                    <label>التاريخ:</label>
+                    <input type="date" id="repDate" value="2025-04-10">
+                </div>
+                <div class="form-group">
+                    <label>العنوان:</label>
+                    <input type="text" id="address" placeholder="الحي، المدينة، الموقع التفصيلي">
+                </div>
+                <div class="form-group full-width-row">
+                    <label>نوع الصيانة:</label>
+                    <div class="checkbox-group-inline">
+                        <label><input type="checkbox" class="maint-type" value="وقائية"> وقائية</label>
+                        <label><input type="checkbox" class="maint-type" value="تركيب"> تركيب</label>
+                        <label><input type="checkbox" class="maint-type" value="تسليم"> تسليم</label>
+                        <label><input type="checkbox" class="maint-type" value="طارئة"> طارئة</label>
+                        <label><input type="checkbox" class="maint-type" value="فحص"> فحص</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- معلومات المولد -->
+            <div class="section-title">معلومات المولد الكهربائي</div>
+            <div class="two-columns">
+                <div class="form-group"><label>الشركة الصانعة:</label><input type="text" id="manufacturer" placeholder="كتربلر / بيركنز"></div>
+                <div class="form-group"><label>الموديل:</label><input type="text" id="model" placeholder="الموديل"></div>
+                <div class="form-group"><label>القدرة (KVA):</label><input type="text" id="powerKVA" placeholder="مثال: 250"></div>
+                <div class="form-group"><label>المحرك:</label><input type="text" id="engineType" placeholder="نوع المحرك"></div>
+                <div class="form-group"><label>لوحة التحكم:</label><input type="text" id="controlPanel" placeholder="DeepSea / ComAp"></div>
+                <div class="form-group"><label>قراءة العداد:</label><input type="text" id="hourMeter" placeholder="عدد ساعات التشغيل"><span class="counter-label">ساعة</span></div>
+            </div>
+
+            <!-- زيت المحرك والوقود -->
+            <div class="section-title">زيت المحرك والوقود</div>
+            <div class="grid-checks">
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص مستوى الزيت</label><input type="text" placeholder="ممتاز / متوسط / منخفض"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص فلتر الزيت</label><input type="text" placeholder="نظيف / يحتاج تغيير"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص تهريب الزيت</label><input type="text" placeholder="لا يوجد / يوجد"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص كمية الوقود</label><input type="text" placeholder="%"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص فلتر الوقود</label><input type="text" placeholder="نظيف / متسخ"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص أنابيب وفواصل الماء</label><input type="text" placeholder="سليم / تلف"></div>
+            </div>
+
+            <!-- التبريد والهواء -->
+            <div class="section-title">نظام التبريد والهواء</div>
+            <div class="grid-checks">
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص فلتر الهواء</label><input type="text" placeholder="نظيف / يحتاج صيانة"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص نظام التهوية</label><input type="text" placeholder="جيد / ضعيف"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص مستوى ماء الراديتر</label><input type="text" placeholder="ممتاز / منخفض"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص خراطيم المياه</label><input type="text" placeholder="سليمة / تشققات"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص قشاط المروحة</label><input type="text" placeholder="مشدود / يحتاج تبديل"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص العادم (البلور)</label><input type="text" placeholder="سليم / تصدعات"></div>
+            </div>
+
+            <!-- النظام الكهربائي والبطارية - تم تعديل فحص فولتية البطارية إلى فحص فولتية المولد RST -->
+            <div class="section-title">النظام الكهربائي والبطارية</div>
+            <div class="grid-checks">
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص كوابل البطارية</label><input type="text" placeholder="سليمة / متآكلة"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص فولتية المولد RST</label><input type="text" placeholder="R:___V , S:___V , T:___V"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص شاحن البطارية (Dynamo)</label><input type="text" placeholder="يعمل / لا يعمل"></div>
+                <div class="check-item"><input type="checkbox" class="check-item-box"> <label>فحص لوحة الـ ATS والتحويل</label><input type="text" placeholder="جيد / عطل"></div>
+            </div>
+
+            <!-- ملاحظات -->
+            <div class="section-title">ملاحظات فنية وتوصيات</div>
+            <div class="notes-wrapper">
+                <textarea id="generalNotes" class="notes-field" rows="2" placeholder="أي ملاحظات إضافية حول الأعطال، التوصيات أو الأعمال المقترحة للصيانة المستقبلية"></textarea>
+            </div>
+
+            <!-- تذييل خفيف (تمت إزالة التوقيع بالكامل) -->
+            <div class="footer-note">
+                يعتمد هذا التقرير على الفحص البصري والقياسات الميدانية للمكونات الرئيسية للمولد الكهربائي
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const reportElement = document.getElementById('reportContainer');
+            
+            // دالة تحضير العناصر لأخذ نسخة مطبوعة أو صورة مع الاحتفاظ بقيم الحقول
+            function prepareForCapture() {
+                // الحقول النصية والتاريخ
+                const allTextInputs = reportElement.querySelectorAll('input[type="text"], input[type="date"], textarea');
+                allTextInputs.forEach(input => {
+                    const currentValue = input.value;
+                    input.setAttribute('value', currentValue);
+                    if (input.tagName === 'TEXTAREA') {
+                        input.innerHTML = currentValue;
+                    }
+                });
+                // تأكيد خاص لحقل التاريخ
+                const dateElem = document.getElementById('repDate');
+                if (dateElem) dateElem.setAttribute('value', dateElem.value);
+                
+                // حفظ حالة جميع الـ checkboxes
+                const allCheckboxes = reportElement.querySelectorAll('input[type="checkbox"]');
+                allCheckboxes.forEach(cb => {
+                    if (cb.checked) {
+                        cb.setAttribute('checked', 'checked');
+                    } else {
+                        cb.removeAttribute('checked');
+                    }
+                });
+                
+                // التأكد من تعيين قيم حقول النص داخل عناصر الفحص (check-item)
+                const dynamicTexts = reportElement.querySelectorAll('.check-item input[type="text"]');
+                dynamicTexts.forEach(txt => {
+                    txt.setAttribute('value', txt.value);
+                });
+                
+                // الملاحظات
+                const notesArea = document.getElementById('generalNotes');
+                if (notesArea) {
+                    notesArea.setAttribute('value', notesArea.value);
+                    notesArea.innerHTML = notesArea.value;
+                }
+            }
+            
+            // وظيفة حفظ الصورة مع الحفاظ على الحجم A4
+            window.downloadReportImage = function() {
+                if (!reportElement) {
+                    alert("حدث خطأ في التقرير");
+                    return;
+                }
+                const btn = document.getElementById('saveImageBtn');
+                const originalText = btn ? btn.innerText : "حفظ كصورة";
+                if (btn) {
+                    btn.innerText = "جاري إنشاء الصورة...";
+                    btn.disabled = true;
+                }
+                prepareForCapture();
+                setTimeout(() => {
+                    html2canvas(reportElement, {
+                        scale: 2.5,
+                        backgroundColor: '#ffffff',
+                        useCORS: true,
+                        logging: false,
+                        windowWidth: reportElement.scrollWidth,
+                        onclone: (clonedDoc, element) => {
+                            if (clonedDoc) {
+                                const clonedChecks = clonedDoc.querySelectorAll('.check-item input[type="text"]');
+                                const originalChecks = reportElement.querySelectorAll('.check-item input[type="text"]');
+                                if (clonedChecks.length === originalChecks.length) {
+                                    for (let i = 0; i < originalChecks.length; i++) {
+                                        clonedChecks[i].value = originalChecks[i].value;
+                                    }
+                                }
+                                const clonedNote = clonedDoc.getElementById('generalNotes');
+                                const originalNote = document.getElementById('generalNotes');
+                                if (clonedNote && originalNote) clonedNote.value = originalNote.value;
+                            }
+                        }
+                    }).then(canvas => {
+                        const link = document.createElement('a');
+                        let dateVal = document.getElementById('repDate') ? document.getElementById('repDate').value : 'تقرير_صيانة';
+                        if (!dateVal) dateVal = 'تقرير_صيانة';
+                        const cleanDate = dateVal.replace(/-/g, '');
+                        link.download = `تقرير_مولد_${cleanDate || 'الحالي'}.png`;
+                        link.href = canvas.toDataURL('image/png');
+                        link.click();
+                        if (btn) {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }
+                    }).catch(error => {
+                        console.error(error);
+                        alert("حدث خطأ أثناء تحويل التقرير إلى صورة، تأكد من الاتصال بالإنترنت أو حاول مرة أخرى");
+                        if (btn) {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                        }
+                    });
+                }, 100);
+            };
+            
+            // وظيفة الطباعة المباشرة
+            window.printReport = function() {
+                prepareForCapture();
+                setTimeout(() => {
+                    window.print();
+                }, 120);
+            };
+            
+            // ربط الأزرار بشكل آمن
+            const saveBtn = document.getElementById('saveImageBtn');
+            if (saveBtn) {
+                const newSaveBtn = saveBtn.cloneNode(true);
+                saveBtn.parentNode.replaceChild(newSaveBtn, saveBtn);
+                newSaveBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.downloadReportImage();
+                });
+            }
+            const printBtn = document.getElementById('printBtn');
+            if (printBtn) {
+                const newPrintBtn = printBtn.cloneNode(true);
+                printBtn.parentNode.replaceChild(newPrintBtn, printBtn);
+                newPrintBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.printReport();
+                });
+            }
+            
+            // تعيين التاريخ بشكل افتراضي ليومنا الحالي إذا لم يكن موجوداً
+            const todayDateInput = document.getElementById('repDate');
+            if (todayDateInput && (!todayDateInput.value || todayDateInput.value === '')) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                todayDateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+            
+            // تنظيف أولي للبيانات مع الحفاظ على الهيكل المناسب
+            function initialClear() {
+                const textFields = ['address', 'manufacturer', 'model', 'powerKVA', 'engineType', 'controlPanel', 'hourMeter'];
+                textFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    if (field && !field.value) field.value = '';
+                });
+                const allCheckItemTexts = document.querySelectorAll('.check-item input[type="text"]');
+                allCheckItemTexts.forEach(t => { if (t && !t.value) t.value = ''; });
+                const notes = document.getElementById('generalNotes');
+                if (notes && !notes.value) notes.value = '';
+                const maintCheckboxes = document.querySelectorAll('.maint-type');
+                maintCheckboxes.forEach(cb => cb.checked = false);
+                const itemChecks = document.querySelectorAll('.check-item-box');
+                itemChecks.forEach(cb => cb.checked = false);
+            }
+            initialClear();
+            if (todayDateInput && (!todayDateInput.value || todayDateInput.value === '')) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                todayDateInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+        })();
+    </script>
+</body>
+</html>
